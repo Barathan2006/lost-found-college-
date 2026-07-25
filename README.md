@@ -106,18 +106,7 @@ DELETE /lost/{id}
 DELETE /found/{id}
 ```
 
-## Suggested build order (1 week)
-
-| Day | Focus |
-|---|---|
-| 1 | Finalize schema, set up project (framework, DB connection, migrations), scaffold Users CRUD |
-| 2 | Lost_Items and Found_Items CRUD (create, list, delete) |
-| 3 | Matching algorithm — write and unit-test the scoring function standalone |
-| 4 | Wire matching into `POST /lost` / `POST /found`, populate Matches, add `GET /matches` |
-| 5 | Notifications table + endpoints, `PUT /claim/{id}` closing logic |
-| 6 | Postman collection, edge cases (duplicate claims, invalid categories), input validation |
-| 7 | Polish: README, seed data, buffer for bugs, demo walkthrough |
-
+ 
 ## Tech stack
 
 Framework, ORM, and database are intentionally left open — this design works equally well with Node/Express, Django, or Spring Boot paired with PostgreSQL, MySQL, or MongoDB.
