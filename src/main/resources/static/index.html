@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost & Found Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --surface-color: rgba(30, 41, 59, 0.7);
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --accent-color: #10b981;
+            --danger-color: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg-color) 0%, #1e1b4b 100%);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        h1 {
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(to right, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: white;
+            border-color: white;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .card-column {
+            background: var(--surface-color);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .column-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .column-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #cbd5e1;
+        }
+
+        .item-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .item-card:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .item-category {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .item-details {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .badge-open { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .badge-matched { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .badge-pending { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transform: scale(0.95);
+            transition: transform 0.2s ease;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: white;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        
+        select.form-control option {
+            background: #1e293b;
+            color: white;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Campus Lost & Found</h1>
+            <div>
+                <button class="btn btn-outline" onclick="openModal('userModal')" style="margin-right: 1rem;">Create User</button>
+                <button class="btn" onclick="openReportModal('lost')">Report Lost</button>
+                <button class="btn" style="margin-left: 0.5rem;" onclick="openReportModal('found')">Report Found</button>
+            </div>
+        </header>
+
+        <div class="dashboard">
+            <!-- Lost Items -->
+            <div class="card-column">
+                <div class="column-header">
+                    <div class="column-title">Lost Items</div>
+                </div>
+                <div id="lostList">
+                    <div class="empty-state">Loading...</div>
+                </div>
+            </div>
+
+            <!-- Found Items -->
+            <div class="card-column">
+                <div class="column-header">
+                    <div class="column-title">Found Items</div>
+                </div>
+                <div id="foundList">
+                    <div class="empty-state">Loading...</div>
+                </div>
+            </div>
+
+            <!-- Matches -->
+            <div class="card-column" style="background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.2);">
+                <div class="column-header">
+                    <div class="column-title" style="color: #34d399;">Potential Matches</div>
+                </div>
+                <div id="matchList">
+                    <div class="empty-state">No matches yet</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create User Modal -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-top:0;">Create Demo User</h2>
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="userName" class="form-control" placeholder="John Doe">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="userEmail" class="form-control" placeholder="john@college.edu">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('userModal')">Cancel</button>
+                <button class="btn" onclick="createUser()">Save User</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Item Modal -->
+    <div id="reportModal" class="modal">
+        <div class="modal-content">
+            <h2 id="reportTitle" style="margin-top:0;">Report Item</h2>
+            <input type="hidden" id="reportType">
+            
+            <div class="form-group">
+                <label>Reporting User</label>
+                <select id="reportUser" class="form-control">
+                    <option value="">Select a user...</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Category (e.g. Wallet, Phone, Keys)</label>
+                <input type="text" id="itemCategory" class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label>Color</label>
+                <input type="text" id="itemColor" class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" id="itemLocation" class="form-control" placeholder="e.g. Main Library">
+            </div>
+            
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="itemDate" class="form-control">
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('reportModal')">Cancel</button>
+                <button class="btn" onclick="submitReport()">Submit Report</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8080';
+        let users = [];
+
+        // Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchUsers();
+            fetchData();
+        });
+
+        async function fetchData() {
+            await Promise.all([
+                loadList('/lost', 'lostList', renderItem),
+                loadList('/found', 'foundList', renderItem),
+                loadList('/matches', 'matchList', renderMatch)
+            ]);
+        }
+
+        async function fetchUsers() {
+            try {
+                const res = await fetch(`${API_URL}/users`);
+                users = await res.json();
+                populateUserDropdown();
+            } catch (err) {
+                console.error("No users API found or error", err);
+            }
+        }
+
+        function populateUserDropdown() {
+            const select = document.getElementById('reportUser');
+            select.innerHTML = '<option value="">Select a user...</option>';
+            users.forEach(u => {
+                const opt = document.createElement('option');
+                opt.value = u.id;
+                opt.textContent = `${u.name} (${u.email})`;
+                select.appendChild(opt);
+            });
+        }
+
+        async function loadList(endpoint, containerId, renderer) {
+            try {
+                const res = await fetch(API_URL + endpoint);
+                const data = await res.json();
+                const container = document.getElementById(containerId);
+                
+                if (!data || data.length === 0) {
+                    container.innerHTML = `<div class="empty-state">No items found</div>`;
+                    return;
+                }
+                
+                container.innerHTML = data.map(renderer).join('');
+            } catch (err) {
+                document.getElementById(containerId).innerHTML = `<div class="empty-state" style="color:#ef4444">Failed to load</div>`;
+            }
+        }
+
+        function renderItem(item) {
+            const date = item.dateLost ? new Date(item.dateLost).toLocaleDateString() : 
+                         (item.dateFound ? new Date(item.dateFound).toLocaleDateString() : 'N/A');
+            return `
+                <div class="item-card">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+                        <div class="item-category">${item.category}</div>
+                        <span class="badge badge-${item.status}">${item.status}</span>
+                    </div>
+                    <div class="item-details">
+                        🎨 ${item.color} <br>
+                        📍 ${item.location} <br>
+                        📅 ${date}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderMatch(match) {
+            return `
+                <div class="item-card" style="border-left: 4px solid #34d399;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+                        <div class="item-category">Match Score: ${match.score}</div>
+                        <span class="badge badge-${match.status}">${match.status}</span>
+                    </div>
+                    <div class="item-details">
+                        <strong>Lost:</strong> ${match.lostItem.category} (${match.lostItem.color}) at ${match.lostItem.location} <br>
+                        <strong>Found:</strong> ${match.foundItem.category} (${match.foundItem.color}) at ${match.foundItem.location}
+                    </div>
+                    ${match.status === 'pending' ? `
+                    <div style="margin-top: 1rem;">
+                        <button class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="confirmMatch('${match.id}')">Confirm Match</button>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        // Modals
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function openReportModal(type) {
+            document.getElementById('reportType').value = type;
+            document.getElementById('reportTitle').innerText = type === 'lost' ? 'Report Lost Item' : 'Report Found Item';
+            
+            // Set today as default date
+            document.getElementById('itemDate').valueAsDate = new Date();
+            
+            openModal('reportModal');
+        }
+
+        // Actions
+        async function createUser() {
+            const data = {
+                name: document.getElementById('userName').value,
+                email: document.getElementById('userEmail').value
+            };
+            
+            await fetch(`${API_URL}/users`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            
+            closeModal('userModal');
+            document.getElementById('userName').value = '';
+            document.getElementById('userEmail').value = '';
+            fetchUsers();
+        }
+
+        async function submitReport() {
+            const type = document.getElementById('reportType').value;
+            const userId = document.getElementById('reportUser').value;
+            
+            if (!userId) {
+                alert('Please select a user first!');
+                return;
+            }
+
+            const data = {
+                user: { id: userId },
+                category: document.getElementById('itemCategory').value,
+                color: document.getElementById('itemColor').value,
+                location: document.getElementById('itemLocation').value
+            };
+
+            if (type === 'lost') {
+                data.dateLost = document.getElementById('itemDate').value;
+            } else {
+                data.dateFound = document.getElementById('itemDate').value;
+            }
+
+            await fetch(`${API_URL}/${type}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+
+            closeModal('reportModal');
+            
+            // Clear form
+            document.getElementById('itemCategory').value = '';
+            document.getElementById('itemColor').value = '';
+            document.getElementById('itemLocation').value = '';
+            
+            fetchData();
+        }
+
+        async function confirmMatch(matchId) {
+            await fetch(`${API_URL}/matches/${matchId}/confirm`, {
+                method: 'PUT'
+            });
+            fetchData();
+        }
+    </script>
+</body>
+</html>

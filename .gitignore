@@ -1,0 +1,12 @@
+target/
+apache-maven-3.9.6/
+maven.zip
+lostfound.db
+*.class
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.factorypath
+lost-found-api.iml
